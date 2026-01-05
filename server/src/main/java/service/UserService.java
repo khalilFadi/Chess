@@ -27,7 +27,7 @@ public class UserService{
             if(e.getMessage().equals("User not found")){
                 //maybe create user directly or redirect to the sign up page
             }else {
-                throw new DataAccessException("already taken");
+                throw e;
             }
         }
         User user = new User(request.getUsername(), request.getPassword(), request.getEmail());
