@@ -27,9 +27,17 @@ public class Server {
             throw new RuntimeException("unable to create database", e);
         }
 
-        UserDAO userDAO = new UserDAO();
-        AuthDAO authDAO = new AuthDAO();
-        GameDAO gameDAO = new GameDAO();
+        UserDAO userDAO;
+        AuthDAO authDAO;
+        GameDAO gameDAO;
+
+        try {
+            userDAO = new UserDAO();
+            authDAO = new AuthDAO();
+            gameDAO = new GameDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException("Unable to initialize database tables", e);
+        }
 
         userService = new UserService(userDAO, authDAO);
         gameService = new GameService(gameDAO, authDAO);

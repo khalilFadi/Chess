@@ -45,7 +45,11 @@ public class AuthDAO {
         try (var conn = DatabaseManager.getConnection()){
             try(var preparedStatement = conn.prepareStatement(statement)){
                 preparedStatement.setString(1, authToken);
-                preparedStatement.executeUpdate();
+                try (var rs = preparedStatement.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getString("username");
+                    }
+                }
             }
         }catch (SQLException e){
             throw new DataAccessException("Unable to read auth token", e);

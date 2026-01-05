@@ -1,8 +1,11 @@
 package service;
 
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import dataaccess.GameDAO;
+
+import javax.xml.crypto.Data;
 
 public class ClearService{
     private final AuthDAO authDAO;
@@ -15,7 +18,7 @@ public class ClearService{
         this.gameDAO = gameDAO;
     }
 
-    public void clear(){
+    public void clear() throws DataAccessException {
         userDAO.clear();
         gameDAO.clear();
         authDAO.clear();
