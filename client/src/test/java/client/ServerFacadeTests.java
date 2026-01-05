@@ -4,6 +4,10 @@ import org.junit.jupiter.api.*;
 import server.Server;
 
 
+import chess.ChessGame;
+import client.model.response.*;
+import org.junit.jupiter.api.*;
+
 public class ServerFacadeTests {
 
     private static Server server;
@@ -36,5 +40,15 @@ public class ServerFacadeTests {
         assertTrue(authData.getAuthToken().length() > 10);
         assertEquals("player1", authData.getUsername());
     }
+
+    @Test
+    public void registerNegative() {
+        assertThrows(Exception.class, () -> {
+            facade.register("player1", "password", "p1@email.com");
+            facade.register("player1", "password", "p1@email.com"); // Duplicate username
+        });
+    }
+
     
+
 }
