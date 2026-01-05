@@ -83,4 +83,31 @@ public class ServerFacadeTests {
         });
     }
 
+    @Test
+    public void listGamesPositive() throws Exception {
+        var authData = facade.register("player5", "password", "p5@email.com");
+        facade.createGame(authData.getAuthToken(), "Game1");
+        facade.createGame(authData.getAuthToken(), "Game2");
+
+        var response = facade.listGames(authData.getAuthToken());
+
+        assertNotNull(response);
+        assertNotNull(response.getGames());
+        assertTrue(response.getGames().size() >= 2);
+
+        // Check that our games are in the list
+        var gameNames = response.getGames().stream()
+                .map(g -> g.getGameName())
+                .toList();
+        assertTrue(gameNames.contains("Game1"));
+        assertTrue(gameNames.contains("Game2"));
+    }
+
+    @Test
+    public void listGamesNegative() {
+        assertThrows(Exception.class, () -> {
+            facade.listGames("invalid_token");
+        });
+    }
+
 }
