@@ -54,10 +54,28 @@ public class AuthDAO {
     }
 
     public void deleteAuth(String authToken) throws DataAccessException {
-        
+        var statement = "DELETE FROM auth WHERE authToken = ?";
+        try (var conn = DatabaseManager.getConnection()){
+            try(var preparedStatement = conn.prepareStatement(statement)){
+                preparedStatement.setString(1, authToken);
+                int rowsAffected = preparedStatement.executeUpdate();
+                if(rowsAffected == 0){
+                    throw new DataAccessException("Invalid auth token");
+                }
+            }
+        } catch (SQLException e){
+            throw new DataAccessException("Unable to delete auth token", e);
+        }
     }
 
-    public void clear() {
-        authTokens.clear();
+    public void clear() throws DataAccessException{
+        var statement = "DELETE FROM auth";
+        try(var conn = DatabaseManager.getConnection()){
+            try(var preparedStatemnt = conn.prepareStatement(statement)){
+                preparedStatemnt.executeUpdate();
+            }
+        }catch (SQLException e){
+            throw new DataAccessException("Unable to clear auth token", e);
+        }
     }
 }
