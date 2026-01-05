@@ -38,6 +38,13 @@ public class AuthDAOTest {
         String retrievedUsername = authDAO.getUsername(authToken);  // Use getUsername, not createAuth
         assertEquals(username, retrievedUsername);
     }
+    @Test
+    @DisplayName("Get Username - Negative (Invalid Token)")
+    public void getUsernameNegative() {
+        assertThrows(DataAccessException.class, () -> {
+            authDAO.getUsername("invalid-token");
+        });
+    }
 
     @Test
     @DisplayName("Delete Auth - Positive")
