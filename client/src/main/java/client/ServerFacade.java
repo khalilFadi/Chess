@@ -101,4 +101,8 @@ public class ServerFacade {
             throw new Exception("Failed to connect to server: " + e.getMessage(), e);
         }
     }
+    public void clear() throws Exception{
+        var path = "/db";
+        makeRequest("DELETE", path, null, null, null);
+    }
 }

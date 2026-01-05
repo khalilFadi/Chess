@@ -7,12 +7,13 @@ import server.Server;
 public class ServerFacadeTests {
 
     private static Server server;
-
+    private static ServerFacade facade;
     @BeforeAll
     public static void init() {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
+        facade = new ServerFacade(port);
     }
 
     @AfterAll
@@ -26,4 +27,14 @@ public class ServerFacadeTests {
         Assertions.assertTrue(true);
     }
 
+    //actual tests
+    @Test
+    public void registerPositive throws Exception {
+        var authData = facade.register("player1", "password", "p1@game");
+        assertNotNull(authData);
+        assertNotNull(authData.getAuthToken());
+        assertTrue(authData.getAuthToken().length() > 10);
+        assertEquals("player1", authData.getUsername());
+    }
+    
 }
