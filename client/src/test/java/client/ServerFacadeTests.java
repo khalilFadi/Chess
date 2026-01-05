@@ -48,7 +48,7 @@ public class ServerFacadeTests {
             facade.register("player1", "password", "p1@email.com"); // Duplicate username
         });
     }
-    
+
     @Test
     public void loginPositive() throws Exception {
         facade.register("player2", "password", "p2@email.com");
@@ -66,6 +66,21 @@ public class ServerFacadeTests {
             facade.login("nonexistent", "wrong");
         });
     }
+    @Test
+    public void createGamePositive() throws Exception {
+        var authData = facade.register("player4", "password", "p4@email.com");
+        var response = facade.createGame(authData.getAuthToken(), "TestGame");
 
+        assertNotNull(response);
+        assertNotNull(response.getGameID());
+        assertTrue(response.getGameID() > 0);
+    }
+
+    @Test
+    public void createGameNegative() {
+        assertThrows(Exception.class, () -> {
+            facade.createGame("invalid_token", "TestGame");
+        });
+    }
 
 }
