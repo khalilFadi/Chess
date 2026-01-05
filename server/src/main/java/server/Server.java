@@ -20,6 +20,13 @@ public class Server {
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
+
+        try {
+            DatabaseManager.createDatabase();
+        } catch (DataAccessException e){
+            throw new RuntimeException("unable to create database", e);
+        }
+
         UserDAO userDAO = new UserDAO();
         AuthDAO authDAO = new AuthDAO();
         GameDAO gameDAO = new GameDAO();
