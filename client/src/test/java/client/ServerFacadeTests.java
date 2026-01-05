@@ -1,12 +1,11 @@
 package client;
 
-import org.junit.jupiter.api.*;
-import server.Server;
-
-
 import chess.ChessGame;
 import client.model.response.*;
 import org.junit.jupiter.api.*;
+import server.Server;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ServerFacadeTests {
 
@@ -26,6 +25,10 @@ public class ServerFacadeTests {
     }
 
 
+    @BeforeEach
+    public void clearDatabase() throws Exception {
+        facade.clear();
+    }
     @Test
     public void sampleTest() {
         Assertions.assertTrue(true);
@@ -33,7 +36,7 @@ public class ServerFacadeTests {
 
     //actual tests
     @Test
-    public void registerPositive throws Exception {
+    public void registerPositive() throws Exception {
         var authData = facade.register("player1", "password", "p1@game");
         assertNotNull(authData);
         assertNotNull(authData.getAuthToken());
@@ -59,7 +62,19 @@ public class ServerFacadeTests {
         assertTrue(authData.getAuthToken().length() > 10);
         assertEquals("player2", authData.getUsername());
     }
+    @Test
+    public void logoutPositive() throws Exception {
+        var authData = facade.register("player3", "password", "p3@email.com");
+        facade.logout(authData.getAuthToken()); // Should not throw
+        assertTrue(true); // If we get here, logout succeeded
+    }
 
+    @Test
+    public void logoutNegative() {
+        assertThrows(Exception.class, () -> {
+            facade.logout("invalid_token");
+        });
+    }
     @Test
     public void loginNegative() {
         assertThrows(Exception.class, () -> {
