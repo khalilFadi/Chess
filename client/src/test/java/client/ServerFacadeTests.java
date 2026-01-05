@@ -109,5 +109,21 @@ public class ServerFacadeTests {
             facade.listGames("invalid_token");
         });
     }
+    @Test
+    public void joinGamePositive() throws Exception {
+        var authData = facade.register("player6", "password", "p6@email.com");
+        var gameResponse = facade.createGame(authData.getAuthToken(), "JoinTest");
+
+        facade.joinGame(authData.getAuthToken(), gameResponse.getGameID(), ChessGame.TeamColor.WHITE);
+        // Should not throw - if we get here, join succeeded
+        assertTrue(true);
+    }
+
+    @Test
+    public void joinGameNegative() {
+        assertThrows(Exception.class, () -> {
+            facade.joinGame("invalid_token", 999, ChessGame.TeamColor.WHITE);
+        });
+    }
 
 }
