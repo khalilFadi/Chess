@@ -11,8 +11,6 @@ import service.ClearService;
 import service.GameService;
 import service.UserService;
 
-import java.net.http.WebSocket;
-
 public class Server {
     private final Javalin javalin;
     private final UserService userService;
@@ -38,11 +36,10 @@ public class Server {
             userDAO = new UserDAO();
             authDAO = new AuthDAO();
             gameDAO = new GameDAO();
-            webSocketHandler = new WebSocketHandler();
         } catch (DataAccessException e) {
             throw new RuntimeException("Unable to initialize database tables", e);
         }
-
+        webSocketHandler = new WebSocketHandler(gameDAO, authDAO);
         userService = new UserService(userDAO, authDAO);
         gameService = new GameService(gameDAO, authDAO);
         clearService = new ClearService(authDAO, userDAO, gameDAO);
@@ -55,7 +52,7 @@ public class Server {
     private void registerWebSocket(){
         javalin.ws("/ws", ws -> {
             ws.onMessage((ctx, message) -> {
-                System.out.println("Received: " + message);
+                webSocketHandler.onMessage(ctx.session, message);
             });
         });
     }
