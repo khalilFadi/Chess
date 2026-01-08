@@ -24,6 +24,9 @@ public class GameService{
     }
 
     public void verifyAuth(String authToken) throws DataAccessException{
+        if(authToken == null){
+            throw new DataAccessException("unauthorized");
+        }
         authDAO.getUsername(authToken);
     }
 
@@ -52,6 +55,8 @@ public class GameService{
         return new ListGamesResponse(gameList);
     }
     public void joinGame(JoinGameRequest request, String authToken) throws DataAccessException{
+
+        verifyAuth(authToken);
         String username = authDAO.getUsername(authToken);
         if(request.getGameID() == null || request.getPlayerColor() == null){
             throw new DataAccessException("bad request");

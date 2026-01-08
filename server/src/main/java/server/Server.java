@@ -113,6 +113,11 @@ public class Server {
             }
             ctx.json(response);
         });
+        javalin.exception(Exception.class, (e, ctx) -> {
+            ErrorMessageResponse respmnse = new ErrorMessageResponse("Error: " + e.getMessage());
+            ctx.status(500);
+            ctx.json(respmnse);
+        });
     }
 
     public int run(int desiredPort) {

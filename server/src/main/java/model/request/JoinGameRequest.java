@@ -3,16 +3,23 @@ package model.request;
 import chess.ChessGame;
 
 public class JoinGameRequest {
-    private ChessGame.TeamColor playerColor;
+    private String playerColor;
     private Integer gameID;
 
     public JoinGameRequest() {}
 
     public ChessGame.TeamColor getPlayerColor() {
-        return playerColor;
+        if(playerColor == null || playerColor.isEmpty()){
+            return null;
+        }
+        try{
+            return ChessGame.TeamColor.valueOf(playerColor.toUpperCase());
+        } catch (IllegalArgumentException e){
+            return null;
+        }
     }
 
-    public void setPlayerColor(ChessGame.TeamColor playerColor) {
+    public void setPlayerColor(String playerColor) {
         this.playerColor = playerColor;
     }
 
