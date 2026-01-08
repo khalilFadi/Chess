@@ -11,6 +11,8 @@ import service.ClearService;
 import service.GameService;
 import service.UserService;
 
+import javax.xml.crypto.Data;
+
 public class Server {
     private final Javalin javalin;
     private final UserService userService;
@@ -58,44 +60,67 @@ public class Server {
     // }
     private void registerEndpoints(){
         javalin.post("/user", ctx -> {
-            RegisterRequest request = gson.fromJson(ctx.body(), RegisterRequest.class);
-            LoginResponse response = userService.register(request);
-            ctx.status(200);
-            ctx.json(response);
+            try {
+                RegisterRequest request = gson.fromJson(ctx.body(), RegisterRequest.class);
+                LoginResponse response = userService.register(request);
+                ctx.status(200);
+                ctx.json(response);
+            } catch (Exception e) {
+                throw new DataAccessException("bad request");
+            }
         });
         javalin.post("/session", ctx -> {
-            LoginRequest request = gson.fromJson(ctx.body(), LoginRequest.class);
-            LoginResponse response = userService.login(request);
-            ctx.status(200);
-            ctx.json(response);
+            try {
+                LoginRequest request = gson.fromJson(ctx.body(), LoginRequest.class);
+                LoginResponse response = userService.login(request);
+                ctx.status(200);
+                ctx.json(response);
+            } catch (Exception e) {
+                throw new DataAccessException("bad request");
+            }
         });
         javalin.post("/game", ctx->{
             String authToken = ctx.header("authorization");
-            CreateGameRequest request = gson.fromJson(ctx.body(), CreateGameRequest.class);
-            CreateGameResponse response = gameService.createGame(request, authToken);
-            ctx.status(200);
-            ctx.json(response);
+            try {
+                CreateGameRequest request = gson.fromJson(ctx.body(), CreateGameRequest.class);
+                CreateGameResponse response = gameService.createGame(request, authToken);
+                ctx.status(200);
+                ctx.json(response);
+            } catch (DataAccessException e) {
+                throw e;  // Re-throw to be handled by exception handler
+            } catch (Exception e) {
+                throw new DataAccessException("bad request");
+            }
         });
         javalin.put("/game", ctx -> {
             String authToken = ctx.header("authorization");
             JoinGameRequest request = gson.fromJson(ctx.body(), JoinGameRequest.class);
             gameService.joinGame(request, authToken);
             ctx.status(200);
+            ctx.json(new java.util.HashMap<>());
         });
         javalin.delete("/session", ctx -> {
             String authToken = ctx.header("authorization");
             userService.logout(authToken);
             ctx.status(200);
+            ctx.json(new java.util.HashMap<>());
         });
         javalin.get("/game", ctx -> {
             String authToken = ctx.header("authorization");
-            ListGamesResponse response = gameService.listGames(authToken);
-            ctx.status(200);
-            ctx.json(response);
+            try {
+                ListGamesResponse response = gameService.listGames(authToken);
+                ctx.status(200);
+                ctx.json(response);
+            } catch (DataAccessException e){
+                throw e;
+            } catch( Exception e){
+                throw new DataAccessException("bad request");
+            }
         });
         javalin.delete("/db", ctx -> {
             clearService.clear();
             ctx.status(200);
+            ctx.json(new java.util.HashMap<>());
         });
     }
     private void registerExceptionHandlers(){
@@ -114,9 +139,9 @@ public class Server {
             ctx.json(response);
         });
         javalin.exception(Exception.class, (e, ctx) -> {
-            ErrorMessageResponse respmnse = new ErrorMessageResponse("Error: " + e.getMessage());
+            ErrorMessageResponse response = new ErrorMessageResponse("Error: " + e.getMessage());
             ctx.status(500);
-            ctx.json(respmnse);
+            ctx.json(response);
         });
     }
 
