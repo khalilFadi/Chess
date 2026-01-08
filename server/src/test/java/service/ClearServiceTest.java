@@ -20,6 +20,9 @@ public class ClearServiceTest {
         authDAO = new AuthDAO();
         gameDAO = new GameDAO();
         clearService = new ClearService(authDAO, userDAO, gameDAO);
+        userDAO.clear();
+        authDAO.clear();
+        gameDAO.clear();
     }
 
     @Test

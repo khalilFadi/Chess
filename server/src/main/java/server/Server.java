@@ -60,38 +60,27 @@ public class Server {
     // }
     private void registerEndpoints(){
         javalin.post("/user", ctx -> {
-            try {
-                RegisterRequest request = gson.fromJson(ctx.body(), RegisterRequest.class);
-                LoginResponse response = userService.register(request);
-                ctx.status(200);
-                ctx.json(response);
-            } catch (Exception e) {
-                throw new DataAccessException("bad request");
-            }
+            RegisterRequest request = gson.fromJson(ctx.body(), RegisterRequest.class);
+            LoginResponse response = userService.register(request);
+            ctx.status(200);
+            ctx.json(response);
         });
+
         javalin.post("/session", ctx -> {
-            try {
-                LoginRequest request = gson.fromJson(ctx.body(), LoginRequest.class);
-                LoginResponse response = userService.login(request);
-                ctx.status(200);
-                ctx.json(response);
-            } catch (Exception e) {
-                throw new DataAccessException("bad request");
-            }
+            LoginRequest request = gson.fromJson(ctx.body(), LoginRequest.class);
+            LoginResponse response = userService.login(request);
+            ctx.status(200);
+            ctx.json(response);
         });
+
         javalin.post("/game", ctx->{
             String authToken = ctx.header("authorization");
-            try {
-                CreateGameRequest request = gson.fromJson(ctx.body(), CreateGameRequest.class);
-                CreateGameResponse response = gameService.createGame(request, authToken);
-                ctx.status(200);
-                ctx.json(response);
-            } catch (DataAccessException e) {
-                throw e;  // Re-throw to be handled by exception handler
-            } catch (Exception e) {
-                throw new DataAccessException("bad request");
-            }
+            CreateGameRequest request = gson.fromJson(ctx.body(), CreateGameRequest.class);
+            CreateGameResponse response = gameService.createGame(request, authToken);
+            ctx.status(200);
+            ctx.json(response);
         });
+
         javalin.put("/game", ctx -> {
             String authToken = ctx.header("authorization");
             JoinGameRequest request = gson.fromJson(ctx.body(), JoinGameRequest.class);
@@ -99,24 +88,21 @@ public class Server {
             ctx.status(200);
             ctx.json(new java.util.HashMap<>());
         });
+
         javalin.delete("/session", ctx -> {
             String authToken = ctx.header("authorization");
             userService.logout(authToken);
             ctx.status(200);
             ctx.json(new java.util.HashMap<>());
         });
+
         javalin.get("/game", ctx -> {
             String authToken = ctx.header("authorization");
-            try {
-                ListGamesResponse response = gameService.listGames(authToken);
-                ctx.status(200);
-                ctx.json(response);
-            } catch (DataAccessException e){
-                throw e;
-            } catch( Exception e){
-                throw new DataAccessException("bad request");
-            }
+            ListGamesResponse response = gameService.listGames(authToken);
+            ctx.status(200);
+            ctx.json(response);
         });
+
         javalin.delete("/db", ctx -> {
             clearService.clear();
             ctx.status(200);
