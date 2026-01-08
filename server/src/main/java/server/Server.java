@@ -17,7 +17,7 @@ public class Server {
     private final GameService gameService;
     private final ClearService clearService;
     private final Gson gson = new Gson();
-    private WebSocketHandler webSocketHandler;
+    // private WebSocketHandler webSocketHandler;
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
@@ -39,23 +39,23 @@ public class Server {
         } catch (DataAccessException e) {
             throw new RuntimeException("Unable to initialize database tables", e);
         }
-        webSocketHandler = new WebSocketHandler(gameDAO, authDAO);
+        // webSocketHandler = new WebSocketHandler(gameDAO, authDAO);
         userService = new UserService(userDAO, authDAO);
         gameService = new GameService(gameDAO, authDAO);
         clearService = new ClearService(authDAO, userDAO, gameDAO);
 
         registerEndpoints();
         registerExceptionHandlers();
-        registerWebSocket();
+        // registerWebSocket();
         // Register your endpoints and exception handlers here.
     }
-    private void registerWebSocket(){
-        javalin.ws("/ws", ws -> {
-            ws.onMessage((ctx, message) -> {
-                webSocketHandler.onMessage(ctx.session, message);
-            });
-        });
-    }
+    // private void registerWebSocket(){
+    //     javalin.ws("/ws", ws -> {
+    //         ws.onMessage((ctx, message) -> {
+    //             webSocketHandler.onMessage(ctx.session, message);
+    //         });
+    //     });
+    // }
     private void registerEndpoints(){
         javalin.post("/user", ctx -> {
             RegisterRequest request = gson.fromJson(ctx.body(), RegisterRequest.class);
